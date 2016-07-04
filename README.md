@@ -1,2 +1,2 @@
 # WD_MesssageQueue_Demo
-A sample project meant to demonstrate how to interact with Workday message queues in WD Studio. More background is here:
+A sample project meant to demonstrate how to interact with Workday message queues in WD Studio. More background is here: https://github.com/mrichen/WD_MesssageQueue_Demo
