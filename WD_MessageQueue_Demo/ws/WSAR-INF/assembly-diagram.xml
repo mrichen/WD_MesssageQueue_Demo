@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wdnm:Diagram xmlns:wdnm="http://workday.com/studio/editors/notation">
+  <element href="assembly.xml#WorkdayAssembly"/>
+  <visualProperties x="12" y="125">
+    <element href="assembly.xml#StartHere"/>
+  </visualProperties>
+  <visualProperties x="381" y="125">
+    <element href="assembly.xml#call-enqueue-message"/>
+  </visualProperties>
+  <visualProperties x="635" y="125">
+    <element href="assembly.xml#call-dequeue-message"/>
+  </visualProperties>
+  <visualProperties x="21" y="295">
+    <element href="assembly.xml#enqueue-message"/>
+  </visualProperties>
+  <visualProperties x="293" y="295">
+    <element href="assembly.xml#enqueue"/>
+  </visualProperties>
+  <visualProperties x="176" y="125">
+    <element href="assembly.xml#initial-message"/>
+  </visualProperties>
+  <visualProperties x="38" y="524">
+    <element href="assembly.xml#dequeue-message"/>
+  </visualProperties>
+  <visualProperties x="324" y="524">
+    <element href="assembly.xml#add-header"/>
+  </visualProperties>
+  <visualProperties x="497" y="524">
+    <element href="assembly.xml#get-queued-messages"/>
+  </visualProperties>
+  <visualProperties x="753" y="530">
+    <element href="assembly.xml#split-message-summary"/>
+  </visualProperties>
+  <visualProperties x="1007" y="619">
+    <element href="assembly.xml#get-message-id"/>
+  </visualProperties>
+  <visualProperties x="1227" y="619">
+    <element href="assembly.xml#retrieve-message"/>
+  </visualProperties>
+  <visualProperties x="1445" y="619">
+    <element href="assembly.xml#produce-output"/>
+  </visualProperties>
+  <decorations x="21" y="29" width="513" height="48" font="Arial|14|0" fontColor="1" type="TEXT" text="Demo: Workday Message Queue processing"/>
+  <decorations x="12" y="248" width="710" height="60" type="TEXT" text="It really is this simple. Just specify the name of the queue in the 'queue name' field of your enqueue step."/>
+  <decorations x="21" y="433" width="595" height="77" type="TEXT" text="Unfortunately there's no all-in-one 'dequeue' step as of yet. You'll need to retrieve a summary of new messages, split that, and retrieve the message bodies one by one."/>
+  <decorations x="302" y="756" width="160" height="100" type="NOTE" text="You'll need to pass the 'X-Tenant' header with each call to the queue service."/>
+  <decorations x="506" y="762" width="173" height="88" type="NOTE" text="A pretty straightforward REST call with basic http auth. Sub in your datacenters URL"/>
+  <decorations x="753" y="762" width="180" height="113" type="NOTE" text="The 'no split message error' and 'split until' will prevent an error from being thrown if there are no new messages."/>
+  <decorations x="1109" y="756" width="255" height="119" type="NOTE" text="Extract the message ID and use it to retrieve the message body. You can switch the HTTP method to 'DELETE' to remove the mssage from the queue after retrieval if desired."/>
+  <connections type="routesResponseTo" sourceAnchorX="0.9664804469273743" sourceAnchorY="0.35135135135135137" targetAnchorX="0.20253164556962025" targetAnchorY="0.35135135135135137">
+    <source href="assembly.xml#call-enqueue-message"/>
+    <target href="assembly.xml#call-dequeue-message"/>
+  </connections>
+  <connections type="routesTo" sourceAnchorX="0.9888268156424581" sourceAnchorY="0.5135135135135135" targetAnchorX="0.42657342657342656" targetAnchorY="0.20652173913043478">
+    <source href="assembly.xml#enqueue-message"/>
+    <target href="assembly.xml#enqueue"/>
+  </connections>
+  <connections type="routesTo" sourceAnchorX="0.8739495798319328" sourceAnchorY="0.40540540540540543" targetAnchorX="0.014285714285714285" targetAnchorY="0.16304347826086957">
+    <source href="assembly.xml#StartHere"/>
+    <target href="assembly.xml#initial-message"/>
+  </connections>
+  <connections type="routesTo" sourceAnchorX="0.9642857142857143" sourceAnchorY="0.13043478260869565" targetAnchorX="0.10679611650485436" targetAnchorY="0.24324324324324326">
+    <source href="assembly.xml#initial-message"/>
+    <target href="assembly.xml#call-enqueue-message"/>
+  </connections>
+  <connections type="routesTo" sourceAnchorX="0.9050279329608939" sourceAnchorY="0.4864864864864865" targetAnchorX="0.29310344827586204" targetAnchorY="0.1956521739130435">
+    <source href="assembly.xml#dequeue-message"/>
+    <target href="assembly.xml#add-header"/>
+  </connections>
+  <connections type="routesTo" sourceAnchorX="0.9741379310344828" sourceAnchorY="0.14583333333333334" targetAnchorX="0.004901960784313725" targetAnchorY="0.22535211267605634">
+    <source href="assembly.xml#add-header"/>
+    <target href="assembly.xml#get-queued-messages"/>
+  </connections>
+  <connections type="routesResponseTo" sourceAnchorX="0.7892156862745098" sourceAnchorY="0.2676056338028169" targetAnchorX="0.15384615384615385" targetAnchorY="0.06923076923076923">
+    <source href="assembly.xml#get-queued-messages"/>
+    <target href="assembly.xml#split-message-summary"/>
+  </connections>
+  <connections type="routesTo">
+    <source href="assembly.xml#//@beans/@mixed.1/@splitter.0/@subRoute.0"/>
+    <target href="assembly.xml#get-message-id"/>
+  </connections>
+  <connections type="routesTo" sourceAnchorX="0.9444444444444444" sourceAnchorY="0.3229166666666667" targetAnchorX="0.06432748538011696" targetAnchorY="0.43243243243243246">
+    <source href="assembly.xml#get-message-id"/>
+    <target href="assembly.xml#retrieve-message"/>
+  </connections>
+  <connections type="routesResponseTo" sourceAnchorX="0.9824561403508771" sourceAnchorY="0.4225352112676056" targetAnchorX="0.32857142857142857" targetAnchorY="0.29347826086956524">
+    <source href="assembly.xml#retrieve-message"/>
+    <target href="assembly.xml#produce-output"/>
+  </connections>
+  <connections source="//@decorations.3" type="Notation" sourceAnchorX="0.325" sourceAnchorY="0.12" targetAnchorX="0.46551724137931033" targetAnchorY="0.6875">
+    <target href="assembly.xml#add-header"/>
+  </connections>
+  <connections source="//@decorations.4" type="Notation" sourceAnchorX="0.3352601156069364" sourceAnchorY="0.18181818181818182" targetAnchorX="0.3480392156862745" targetAnchorY="0.23943661971830985">
+    <target href="assembly.xml#get-queued-messages"/>
+  </connections>
+  <connections source="//@decorations.5" type="Notation" sourceAnchorX="0.3111111111111111" sourceAnchorY="0.13815789473684212" targetAnchorX="0.48756218905472637" targetAnchorY="0.5426829268292683">
+    <target href="assembly.xml#split-message-summary"/>
+  </connections>
+  <connections source="//@decorations.6" type="Notation" sourceAnchorX="0.40784313725490196" sourceAnchorY="0.3148148148148148" targetAnchorX="0.5555555555555556" targetAnchorY="0.5104166666666666">
+    <target href="assembly.xml#get-message-id"/>
+  </connections>
+  <connections source="//@decorations.6" type="Notation" sourceAnchorX="0.6549019607843137" sourceAnchorY="0.24074074074074073" targetAnchorX="0.32748538011695905" targetAnchorY="0.5352112676056338">
+    <target href="assembly.xml#retrieve-message"/>
+  </connections>
+</wdnm:Diagram>

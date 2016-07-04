@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+     xmlns="http://www.springframework.org/schema/beans"
+     xmlns:beans="http://www.springframework.org/schema/beans"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:cc="http://www.capeclear.com/assembly/10"
+     xmlns:cloud="urn:com.workday/esb/cloud/10.0"
+     xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"
+     xmlns:pi="urn:com.workday/picof"
+     xmlns:wd="urn:com.workday/bsvc"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ 
+	<cc:assembly id="WorkdayAssembly" version="2016.6">
+        <cc:workday-in id="StartHere" routes-to="initial-message">
+            <cc:integration-system name="WD_MessageQueue_Demo"/>
+        </cc:workday-in>
+        <cc:local-out id="call-enqueue-message" store-message="none" routes-response-to="call-dequeue-message" endpoint="vm://WD_MessageQueue_Demo/enqueue-message"/>
+        <cc:local-out id="call-dequeue-message" store-message="none" endpoint="vm://WD_MessageQueue_Demo/dequeue-message"/>
+        <cc:local-in id="enqueue-message" routes-to="enqueue"/>
+        <cc:async-mediation id="enqueue">
+            <cc:steps>
+                <cc:enqueue-message id="EnqueueMessage" contentType="text/xml" queueName="WD_MQ_Demo"/>
+            </cc:steps>
+        </cc:async-mediation>
+        <cc:async-mediation id="initial-message" routes-to="call-enqueue-message">
+            <cc:steps>
+                <cc:write id="Write">
+                    <cc:message>
+                        <cc:text>&lt;message>This is a sample message&lt;/message></cc:text>
+                    </cc:message>
+                </cc:write>
+            </cc:steps>
+        </cc:async-mediation>
+        <cc:local-in id="dequeue-message" routes-to="add-header"/>
+        <cc:async-mediation id="add-header" routes-to="get-queued-messages">
+            <cc:steps>
+                <cc:set-headers id="SetHeaders"><cc:remove-headers/><cc:add-headers><cc:add-header name="X-Tenant" value="@{props['cc.customer.id']}"/></cc:add-headers></cc:set-headers>
+            </cc:steps>
+        </cc:async-mediation>
+        <cc:http-out id="get-queued-messages" routes-response-to="split-message-summary" endpoint="https://impl-cci.workday.com/ccx/wd-queue/WD_MQ_Demo/fresh?maxMessages=64000" http-method="GET">
+            <cc:http-basic-auth password="@{props['wss.usernametoken.password']}" username="@{props['wss.usernametoken.username']}"/>
+        </cc:http-out>
+        <cc:splitter id="split-message-summary" no-split-message-error="false" split-until="parts[0].xpath('/mq:messages/@total-count', 'mq http://www.workday.com/wd-queue/17') == '0'">
+            <cc:sub-route name="get-message-ids" routes-to="get-message-id"/>
+            <cc:xml-stream-splitter namespaces="mq http://www.workday.com/wd-queue/17" xpath="/mq:messages/mq:message"/>
+        </cc:splitter>
+        <cc:async-mediation id="get-message-id" routes-to="retrieve-message">
+            <cc:steps>
+                <cc:eval id="Eval"><cc:expression>props['message_id'] = parts[0].xpath('/mq:message/mq:index', 'mq http://www.workday.com/wd-queue/17')</cc:expression></cc:eval>
+            </cc:steps>
+        </cc:async-mediation>
+        <cc:http-out id="retrieve-message" routes-response-to="produce-output" endpoint="https://impl-cci.workday.com/ccx/wd-queue/WD_MQ_Demo/messages/@{props['message_id']}" http-method="GET">
+            <cc:http-basic-auth password="@{props['wss.usernametoken.password']}" username="@{props['wss.usernametoken.username']}"/>
+        </cc:http-out>
+        <cc:async-mediation id="produce-output">
+            <cc:steps>
+                <cc:log id="Log">
+                    <cc:log-message>
+                        <cc:message-content/>
+                    </cc:log-message>
+                </cc:log>
+            </cc:steps>
+        </cc:async-mediation>
+	</cc:assembly>
+
+</beans>
